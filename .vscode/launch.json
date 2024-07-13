@@ -1,0 +1,32 @@
+{
+    "configurations": [
+        {
+            "name": "Launch Program",
+            "program": "${workspaceFolder}/src/main.js",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node",
+            "env": {
+              "MovieProvider": "allocineMovieProvider",
+              "SerieProvider": "allocineSerieProvider",
+              "MinLogLevel": "DEBUG"
+            }
+        },
+        {
+            "name": "Test Allocine",
+            "program": "${workspaceFolder}/test/allocine.js",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node",
+            "env": {
+              "MovieProvider": "allocineMovieProvider",
+              "SerieProvider": "allocineSerieProvider",
+              "MinLogLevel": "DEBUG"
+            }
+        }
+    ]
+}

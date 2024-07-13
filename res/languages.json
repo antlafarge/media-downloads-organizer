@@ -1,0 +1,13 @@
+[
+    "(?:true|sub)?french",
+    "vf(?:[2fiq]|stfr)?",
+    "fr2",
+    "vo(?:[afq]|st(?:a|en|fr)?)?",
+    "v\\w\\wst\\w\\w",
+    "vq",
+    "Multi(?:\\d|language)?",
+    "sub(?:forced|bed)",
+    "(?:fan|soft|hard|fast)sub",
+    "en(?:g(?:glish)?)?",
+    "unsubbed"
+]

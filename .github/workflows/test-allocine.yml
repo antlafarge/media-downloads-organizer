@@ -1,0 +1,39 @@
+name: Test-allocine
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths-ignore:
+      - '**.md'
+      - '**.MD'
+  pull_request:
+    branches:
+      - 'main'
+    paths-ignore:
+      - '**.md'
+      - '**.MD'
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 1'
+
+jobs:
+  Test-allocine:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.4.x'
+      - name: Setup project 
+        run: |
+          npm isntall -g npm
+          npm install
+      - name: Launch test
+        run: node ./test/allocine.js
+        env:
+            MovieProvider: allocineMovieProvider
+            SerieProvider: allocineSerieProvider
+            MinLogLevel: DEBUG
