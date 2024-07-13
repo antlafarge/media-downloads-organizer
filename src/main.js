@@ -55,7 +55,7 @@ async function main()
 
     for await (const file of getFiles(downloadsPath))
     {
-        Logger.group(`Process ${file.relativeFilePath}`);
+        Logger.group(`Process "${file.relativeFilePath}"`);
         
         if (! scanFileExtensionsRE.test(file.fileName))
         {
