@@ -1,5 +1,6 @@
 [
-    "AAC|AC3|ALAC|APE|DTS|FLAC|LAME|MP[3C]|OGG|ATMOS",
-    "DD(?:P?\\W?5.1)?",
-    "[23457]\\.[01]"
+    "AAC|AC3|ALAC|APE|DTS|FLAC|LAME|MP[3C]|OGG",
+    "DD(?:P?\\W?5.1)?(?:.ATMOS)?",
+    "[23457]\\.[01]",
+    "ATMOS"
 ]
