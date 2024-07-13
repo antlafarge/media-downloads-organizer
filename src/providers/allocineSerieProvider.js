@@ -41,7 +41,7 @@ export default class AllocineMovieProvider extends Provider
         let bestMatch = { MatchScore: -Infinity };
         const alreadyProcessedSeries = {};
 
-        const googleSearch = `site:allocine.fr serie "${searchWords.join(` `)} saison ${parseInt(serieSeasonNumber)}"`;
+        const googleSearch = `site:allocine.fr serie ${searchWords.join(` `)} saison ${serieSeasonNumber}`;
         const googleSearchUrl = `${googleSearchUrlBase}${encodeURIComponent(googleSearch)}`;
 
         Logger.debug(`Google Search : '${googleSearch}'`);
