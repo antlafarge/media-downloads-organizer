@@ -209,7 +209,7 @@ async function main()
         }
         const t1 = performance.now();
         lastDownloadSpeedBytesPerMs = fileSize / (t1 - t0);
-        Logger.debug(`Last download speed : ${getFileSizeReadable(lastDownloadSpeedBytesPerMs / 1000)}/s`);
+        Logger.debug(`Last download speed : ${getFileSizeReadable(lastDownloadSpeedBytesPerMs * 1000)}/s`);
 
         if (await fileExists(originalFilePath))
         {
