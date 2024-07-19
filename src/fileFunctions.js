@@ -34,24 +34,31 @@ async function getFileSize(filePath)
 
 async function* getFiles(dir, relativeDirPath = ``)
 {
-    const dirents = await fs.readdir(dir, { withFileTypes: true });
-    for (const dirent of dirents)
+    try
     {
-        const res = path.resolve(dir, dirent.name);
-        if (dirent.isDirectory())
+        const dirents = await fs.readdir(dir, { withFileTypes: true });
+        for (const dirent of dirents)
         {
-            yield* getFiles(res, `${relativeDirPath}${dirent.name}/`);
+            const res = path.resolve(dir, dirent.name);
+            if (dirent.isDirectory())
+            {
+                yield* getFiles(res, `${relativeDirPath}${dirent.name}/`);
+            }
+            else
+            {
+                yield {
+                    'absoluteFilePath': res,
+                    'relativeDirPath': relativeDirPath,
+                    'fileName': dirent.name,
+                    'relativeFilePath': `${relativeDirPath}${dirent.name}`,
+                    'size': await getFileSize(res)
+                };
+            }
         }
-        else
-        {
-            yield {
-                'absoluteFilePath': res,
-                'relativeDirPath': relativeDirPath,
-                'fileName': dirent.name,
-                'relativeFilePath': `${relativeDirPath}${dirent.name}`,
-                'size': await getFileSize(res)
-            };
-        }
+    }
+    catch (error)
+    {
+        Logger.error('"fs.readdir" failed :', error);
     }
 }
 
