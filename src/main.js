@@ -133,7 +133,7 @@ async function main()
         const pathMatchResult = infos[`TargetFileName`].match(/^(.+)[\/\\].+?$/);
         if (pathMatchResult && pathMatchResult[1].length > 0)
         {
-            Logger.debug(`Create directory "${pathMatchResult[1]}"`);
+            Logger.log(`Create directory "${pathMatchResult[1]}"`);
             try
             {
                 await fs.mkdir(`${targetPath}/${pathMatchResult[1]}`, { recursive: true });

@@ -111,7 +111,7 @@ export default class AllocineMovieProvider extends Provider
                 
                 if (infos.MatchScore >= minMatchThreshold)
                 {
-                    Logger.debug(`Match ${infos.MatchScore.toFixed(2)} : "${infos.Title}"`);
+                    Logger.log(`Match ${infos.MatchScore.toFixed(2)} : "${infos.Title}"`);
                     
                     matches.push(infos);
                     
