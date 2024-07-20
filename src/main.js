@@ -60,12 +60,14 @@ async function main()
         if (! scanFileExtensionsRE.test(file.fileName))
         {
             Logger.info('Skip: file extension ');
+            Logger.groupEnd();
             continue;
         }
         
         if (file.fileName.endsWith(ignoreTag))
         {
             Logger.debug(`Skip ignore file "${file.relativeFilePath}"`);
+            Logger.groupEnd();
             continue;
         }
 
@@ -74,6 +76,7 @@ async function main()
         if (await fileExists(`${originalFilePath}${ignoreTag}`))
         {
             Logger.debug(`Skip already ignored file "${file.relativeFilePath}"`);
+            Logger.groupEnd();
             continue;
         }
         
