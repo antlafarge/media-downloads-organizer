@@ -18,7 +18,7 @@ const oneDay = oneHour * 24;
 const oneMonth = oneDay * 30.4;
 const oneYear = oneMonth * 365.25;
 const timeConvert = [ oneYear, oneMonth, oneDay, oneHour, oneMin, oneSecond, 1 ];
-const timeSuffix = [ `years`, `months`, `days`, `hours`, `minutes`, `seconds`, `milliseconds` ];
+const timeSuffix = [ `y`, `mon`, `d`, `h`, `min`, `s`, `ms` ];
 function getTimeReadable(timeMs)
 {
     let str = '';

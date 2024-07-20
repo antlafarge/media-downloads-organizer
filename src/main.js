@@ -191,12 +191,13 @@ async function main()
         
         Logger.group(`Copy "${infos[`TargetFileName`]}"`);
         const fileSize = await getFileSize(originalFilePath);
-        Logger.info(`File size : ${getFileSizeReadable(fileSize)}`);
+        let fileSizeLog = `File size : ${getFileSizeReadable(fileSize)}`;
         if (lastDownloadSpeedBytesPerMs > 0)
         {
-            const estimatedTimeMs = Math.round((fileSize / lastDownloadSpeedBytesPerMs) * 1.1);
-            Logger.info(`Estimated time : ${getTimeReadable(estimatedTimeMs)}`);
+            const estimatedTimeMs = Math.round((fileSize / lastDownloadSpeedBytesPerMs) * 1.05);
+            fileSizeLog += ` (Estimated time : ${getTimeReadable(estimatedTimeMs)})`;
         }
+        Logger.info(fileSizeLog);
         const t0 = performance.now();
         try
         {

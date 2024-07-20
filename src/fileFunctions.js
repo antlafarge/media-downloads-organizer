@@ -6,7 +6,7 @@ import { getHeaders } from "./webFunctions.js";
 
 async function downloadFile(fileUrl, referer, targetFilePath)
 {
-    Logger.info(`Download "${fileUrl}"`);
+    Logger.debug(`Download "${fileUrl}"`);
     const response = await fetch(fileUrl, { method: `GET`, headers: getHeaders(fileUrl, referer) });
     const buffer = await response.arrayBuffer();
     await fs.writeFile(targetFilePath, new DataView(buffer));
