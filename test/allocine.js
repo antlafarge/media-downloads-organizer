@@ -62,7 +62,7 @@ async function main()
     {
         Logger.info('FAILED');
         Logger.groupEnd();
-        process.exit(exitCode);
+        process.exit(exitCodeMovie || exitCodeSerie);
     }
     else
     {

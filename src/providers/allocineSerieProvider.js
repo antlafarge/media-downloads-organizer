@@ -297,17 +297,17 @@ export default class AllocineMovieProvider extends Provider
     
     extractEpisodeInfos(dom, infos)
     {
-        const episodeTitlesNodes = Array.from(dom.window.document.querySelectorAll(`div.meta>div.meta-title`));
+        const episodeTitleNodes = Array.from(dom.window.document.querySelectorAll(`div.meta>div.meta-title`));
         const episodeTitleRegExp = /^\W*S(\d+)\W*E\W*(\d+)\W*(.*)\s*$/i;
         const seasonNumber = parseInt(infos[`SeasonNumber`]);
         const episodeNumber = parseInt(infos[`EpisodeNumber`]);
-        for (const episodeTitlesNode of episodeTitlesNodes)
+        for (const episodeTitleNode of episodeTitleNodes)
         {
-            const episodeTitleRegExpRes = episodeTitlesNode.textContent.match(episodeTitleRegExp);
+            const episodeTitleRegExpRes = episodeTitleNode.textContent.match(episodeTitleRegExp);
             if (episodeTitleRegExpRes && episodeTitleRegExpRes[1] == seasonNumber && episodeTitleRegExpRes[2] == episodeNumber)
             {
                 infos[`EpisodeTitle`] = episodeTitleRegExpRes[3].trim();
-                const episodeSynopsisNode = episodeTitlesNode.parentNode.parentNode.parentNode.querySelector(`div.content-txt.synopsis`);
+                const episodeSynopsisNode = episodeTitleNode.parentNode.parentNode.querySelector(`div.content-txt.synopsis`);
                 if (episodeSynopsisNode != null)
                 {
                     infos[`EpisodeSynopsis`] = episodeSynopsisNode.textContent.trim();

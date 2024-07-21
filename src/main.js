@@ -50,20 +50,20 @@ async function main()
         Logger.error(`Target directory "./series" not found`);
         process.exit(1);
     }
-    
+
     let noChanges = true;
 
     for await (const file of getFiles(downloadsPath))
     {
         Logger.group(`Process "${file.relativeFilePath}"`);
-        
+
         if (! scanFileExtensionsRE.test(file.fileName))
         {
             Logger.info('Skip: file extension ');
             Logger.groupEnd();
             continue;
         }
-        
+
         if (file.fileName.endsWith(ignoreTag))
         {
             Logger.debug(`Skip ignore file "${file.relativeFilePath}"`);
@@ -79,7 +79,7 @@ async function main()
             Logger.groupEnd();
             continue;
         }
-        
+
         let infos;
         let targetPath;
         if (/^(.+)\WS\W*(\d+)\W*E\W*(\d+)(\W|$)/i.test(file.fileName))
@@ -116,11 +116,11 @@ async function main()
             await sleep(1000);
             continue;
         }
-        
+
         const targetFilePath = `${targetPath}/${infos[`TargetFileName`]}`;
         const targetInfosFilePath = `${targetPath}/${infos[`TargetInfosFileName`]}`;
         const targetImageFilePath = `${targetPath}/${infos[`TargetImageFileName`]}`;
-        
+
         if (await fileExists(targetFilePath))
         {
             Logger.warn(`File already exists "${infos[`TargetFileName`]}"`);
@@ -146,7 +146,7 @@ async function main()
                 continue;
             }
         }
-        
+
         if (! await fileExists(targetImageFilePath) && infos[`ImageUrl`] != null && infos[`ImageUrl`].length > 0)
         {
             Logger.group(`Image "${infos[`TargetImageFileName`]}"`);
@@ -188,7 +188,7 @@ async function main()
         {
             Logger.warn(`File already exists "${infos[`TargetInfosFileName`]}"`);
         }
-        
+
         Logger.group(`Copy "${infos[`TargetFileName`]}"`);
         const fileSize = await getFileSize(originalFilePath);
         let fileSizeLog = `File size : ${getFileSizeReadable(fileSize)}`;
@@ -243,7 +243,7 @@ async function main()
         Logger.groupEnd();
         await sleep(1000);
     }
-    
+
     if (noChanges)
     {
         Logger.info(`No changes`);
