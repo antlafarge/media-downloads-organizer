@@ -297,9 +297,8 @@ export default class AllocineMovieProvider extends Provider
     
     extractEpisodeInfos(dom, infos)
     {
-        const episodeTitlesNodes = Array.from(dom.window.document.querySelectorAll(`div.meta>div.meta-title>span`));
+        const episodeTitlesNodes = Array.from(dom.window.document.querySelectorAll(`div.meta>div.meta-title`));
         const episodeTitleRegExp = /^\W*S(\d+)\W*E\W*(\d+)\W*(.*)\s*$/i;
-        let found = false;
         const seasonNumber = parseInt(infos[`SeasonNumber`]);
         const episodeNumber = parseInt(infos[`EpisodeNumber`]);
         for (const episodeTitlesNode of episodeTitlesNodes)
