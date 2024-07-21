@@ -198,38 +198,44 @@ async function main()
             fileSizeLog += ` (Estimated time : ${getTimeReadable(estimatedTimeMs)})`;
         }
         Logger.info(fileSizeLog);
-        const t0 = performance.now();
         try
         {
+            const t0 = performance.now();
             await fs.copyFile(originalFilePath, targetFilePath);
+            const t1 = performance.now();
+
+            lastDownloadSpeedBytesPerMs = fileSize / (t1 - t0);
+            Logger.debug(`Last download speed : ${getFileSizeReadable(lastDownloadSpeedBytesPerMs * 1000)}/s`);
+
+            const targetFileSize = await getFileSize(targetFilePath);
+            if (fileSize == targetFileSize)
+            {
+                Logger.info(`Remove "${originalFilePath}"`);
+                try
+                {
+                    await fs.rm(originalFilePath);
+                }
+                catch (error)
+                {
+                    Logger.error('Remove media file failed :', error);
+                    Logger.groupEnd();
+                    Logger.groupEnd();
+                    await sleep(1000);
+                    continue;
+                }
+            }
+            else
+            {
+                Logger.warn(`File sizes are different : Skipping downloaded file removal`);
+            }
         }
         catch (error)
         {
-            Logger.error('Copy failed:', error);
+            Logger.error('Copy failed :', error);
             Logger.groupEnd();
             Logger.groupEnd();
             await sleep(1000);
             continue;
-        }
-        const t1 = performance.now();
-        lastDownloadSpeedBytesPerMs = fileSize / (t1 - t0);
-        Logger.debug(`Last download speed : ${getFileSizeReadable(lastDownloadSpeedBytesPerMs * 1000)}/s`);
-
-        if (await fileExists(originalFilePath))
-        {
-            Logger.info(`Remove "${originalFilePath}"`);
-            try
-            {
-                await fs.rm(originalFilePath);
-            }
-            catch (error)
-            {
-                Logger.error('Remove media file failed :', error);
-                Logger.groupEnd();
-                Logger.groupEnd();
-                await sleep(1000);
-                continue;
-            }
         }
         Logger.groupEnd();
 
