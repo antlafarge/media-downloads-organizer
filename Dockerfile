@@ -24,4 +24,4 @@ COPY test test
 COPY res res
 COPY src src
 
-ENTRYPOINT ["node", "src/main.js"]
+ENTRYPOINT ["npm", "run", "start"]

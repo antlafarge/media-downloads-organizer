@@ -1,25 +1,33 @@
 {
   "name": "media-downloads-organizer",
-  "version": "0.1.0",
   "description": "Media Downloads Organizer",
-  "main": "main.js",
-  "scripts": {
-    "test": "node main.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
-  "dependencies": {
-    "jsdom": "^24.1.0",
-    "node-fetch": "^3.3.2"
-  },
+  "homepage": "https://github.com/antlafarge/media-downloads-organizer.git#readme",
+  "author": "Antoine Lafarge (ant.lafarge@gmail.com)",
+  "keywords": [
+    "Media",
+    "Downloads",
+    "Organizer",
+    "Allocine",
+    "Movie",
+    "Serie"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/antlafarge/media-downloads-organizer.git"
   },
-  "homepage": "https://github.com/antlafarge/media-downloads-organizer.git#readme",
   "bugs": {
     "url": "https://github.com/antlafarge/media-downloads-organizer/issues"
+  },
+  "scripts": {
+    "start": "node src/main.js",
+    "test": "node test/allocine.js"
+  },
+  "main": "src/main.js",
+  "type": "module",
+  "version": "0.1.0",
+  "license": "ISC",
+  "dependencies": {
+    "jsdom": "^24.1.0",
+    "node-fetch": "^3.3.2"
   }
 }

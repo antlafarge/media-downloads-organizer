@@ -32,7 +32,7 @@ jobs:
           npm isntall -g npm
           npm install
       - name: Launch test
-        run: node ./test/allocine.js
+        run: npm run test
         env:
             MovieProvider: allocineMovieProvider
             SerieProvider: allocineSerieProvider
