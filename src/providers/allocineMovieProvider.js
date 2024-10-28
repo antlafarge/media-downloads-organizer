@@ -213,7 +213,7 @@ export default class AllocineMovieProvider extends Provider
             {
                 if (creatorNode && creatorNode.textContent && creatorNode.textContent.length > 0)
                 {
-                    const creatorMatchResult = creatorNode.textContent.replace(/\n/g, ' ').match(/^\s*Par\s+(.+?)\s*$/i);
+                    const creatorMatchResult = creatorNode.textContent.replace(/[\n\s]+/g, ' ').match(/^\s*Par\s+(.+?)\s*$/i);
                     if (creatorMatchResult && creatorMatchResult.length > 0)
                     {
                         infos[`Creators`] = creatorMatchResult[1];
