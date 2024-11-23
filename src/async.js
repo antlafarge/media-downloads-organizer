@@ -3,8 +3,7 @@
 // Sleep
 // @param ms time in milliseconds
 // @return Promise resolved when time is passed
-function sleep(delay)
-{
+function sleep(delay) {
     return (delay <= 0) ? Promise.resolve() : new Promise(resolve => setTimeout(resolve, delay));
 }
 
@@ -12,20 +11,16 @@ function sleep(delay)
 // @param operationFunctor Async operation : (retryCount: number) => Promise<any>
 // @param retryAndErrorFunctor Functor which takes the operation failure error has argument and returns a boolean indicating if we can retry to call the operationFunctor : (error: any) => boolean
 // @return Promise<any>
-async function retry(operationFunctor, retryAndErrorFunctor)
-{
+async function retry(operationFunctor, retryAndErrorFunctor) {
     let lastAsyncOperation;
     let canRetry;
     let retryCount = 0;
-    do
-    {
-        try
-        {
+    do {
+        try {
             lastAsyncOperation = operationFunctor(retryCount++);
             return await lastAsyncOperation;
         }
-        catch (error)
-        {
+        catch (error) {
             canRetry = retryAndErrorFunctor(error);
         }
     } while (canRetry);
@@ -37,8 +32,7 @@ async function retry(operationFunctor, retryAndErrorFunctor)
 // @param timesCount Retry times count
 // @param errorFunctor Functor to handle the error
 // @return Promise<any>
-async function retrySeveralTimes(operationFunctor, timesCount, errorFunctor = null)
-{
+async function retrySeveralTimes(operationFunctor, timesCount, errorFunctor = null) {
     return await retry(operationFunctor, (error) => (!errorFunctor || errorFunctor(error) || true) && (timesCount-- > 0));
 }
 
@@ -46,19 +40,15 @@ async function retrySeveralTimes(operationFunctor, timesCount, errorFunctor = nu
 // @param operationFunctor Async operation : () => Promise<any>
 // @param delay Time (in milliseconds) before the returned Promise is rejected
 // @return Promise<any>
-async function timeout(operationFunctor, delay)
-{
-    return new Promise(async (resolve, reject) =>
-    {
+async function timeout(operationFunctor, delay) {
+    return new Promise(async (resolve, reject) => {
         const timeoutId = setTimeout(() => reject(`timeout(${delay})`), delay);
-        try
-        {
+        try {
             const result = await operationFunctor();
             clearTimeout(timeoutId);
             resolve(result);
         }
-        catch (error)
-        {
+        catch (error) {
             reject(error);
         }
     });
@@ -69,8 +59,7 @@ async function timeout(operationFunctor, delay)
 // @param retryAndErrorFunctor Functor which takes the operation failure error has argument and returns a boolean indicating if we can retry to call the operationFunctor : (error: any) => boolean
 // @param timeoutDelay Time (in milliseconds) before the returned Promise is rejected
 // @return Promise<any>
-function retryTimeout(operationFunctor, retryAndErrorFunctor, timeoutDelay)
-{
+function retryTimeout(operationFunctor, retryAndErrorFunctor, timeoutDelay) {
     return retry((retryCount) => timeout(() => operationFunctor(retryCount), timeoutDelay), retryAndErrorFunctor);
 }
 
@@ -79,8 +68,7 @@ function retryTimeout(operationFunctor, retryAndErrorFunctor, timeoutDelay)
 // @param retryTimesCount Retry times count
 // @param timeoutDelay Time (in milliseconds) before the returned Promise is rejected
 // @return Promise<any>
-function retrySeveralTimesTimeout(operationFunctor, retryTimesCount, timeoutDelay, errorFunctor = null)
-{
+function retrySeveralTimesTimeout(operationFunctor, retryTimesCount, timeoutDelay, errorFunctor = null) {
     return retrySeveralTimes((retryCount) => timeout(() => operationFunctor(retryCount), timeoutDelay), retryTimesCount, errorFunctor);
 }
 

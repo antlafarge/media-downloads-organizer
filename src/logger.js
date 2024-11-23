@@ -1,40 +1,36 @@
 // logger.js v0.3
 
-export default class Logger
-{
+export default class Logger {
     static LogLevel =
-    {
-        TEMP: 0, // Temporary information, will be removed from the logs when there is another log to display
-        DEBUG: 1, // Detailed information, useful for debugging
-        LOG: 2, // Normal information
-        INFO: 3, // Relevant information
-        WARNING: 4, // Something abnormal happened
-        ERROR: 5, // Error occured
-        NOTHING: 6 // Nothing is displayed, don't use it as a LogLevel in a log
-    };
+        {
+            TEMP: 0, // Temporary information, will be removed from the logs when there is another log to display
+            DEBUG: 1, // Detailed information, useful for debugging
+            LOG: 2, // Normal information
+            INFO: 3, // Relevant information
+            WARNING: 4, // Something abnormal happened
+            ERROR: 5, // Error occured
+            NOTHING: 6 // Nothing is displayed, don't use it as a LogLevel in a log
+        };
 
     static #LogLevelStr =
-    {
-        0: `Tmp`,
-        1: `Dbg`,
-        2: `Log`,
-        3: `Nfo`,
-        4: `WRN`,
-        5: `ERR`,
-        6: `   `
-    }
+        {
+            0: `Tmp`,
+            1: `Dbg`,
+            2: `Log`,
+            3: `Nfo`,
+            4: `WRN`,
+            5: `ERR`,
+            6: `   `
+        }
 
     static minLogLevel = Logger.LogLevel.DEBUG;
     static #progressStarted = false;
     static #groupsLevel = 0;
 
     // Log temporary messages (replaced by next message on tty, ignored overwise)
-    static temp(...messages)
-    {
-        if (process && process.stdout && process.stdout.isTTY)
-        {
-            if (Logger.#progressStarted)
-            {
+    static temp(...messages) {
+        if (process && process.stdout && process.stdout.isTTY) {
+            if (Logger.#progressStarted) {
                 process.stdout.clearLine(0);
                 process.stdout.cursorTo(0);
             }
@@ -44,10 +40,8 @@ export default class Logger
     }
 
     // Log debug messages
-    static debug(...messages)
-    {
-        if (Logger.minLogLevel > Logger.LogLevel.DEBUG)
-        {
+    static debug(...messages) {
+        if (Logger.minLogLevel > Logger.LogLevel.DEBUG) {
             Logger.temp(...messages);
             return;
         }
@@ -56,10 +50,8 @@ export default class Logger
     }
 
     // Log normal messages
-    static log(...messages)
-    {
-        if (Logger.minLogLevel > Logger.LogLevel.LOG)
-        {
+    static log(...messages) {
+        if (Logger.minLogLevel > Logger.LogLevel.LOG) {
             Logger.temp(...messages);
             return;
         }
@@ -68,10 +60,8 @@ export default class Logger
     }
 
     // Log relevant messages
-    static info(...messages)
-    {
-        if (Logger.minLogLevel > Logger.LogLevel.INFO)
-        {
+    static info(...messages) {
+        if (Logger.minLogLevel > Logger.LogLevel.INFO) {
             Logger.temp(...messages);
             return;
         }
@@ -80,10 +70,8 @@ export default class Logger
     }
 
     // Log warning messages
-    static warn(...messages)
-    {
-        if (Logger.minLogLevel > Logger.LogLevel.WARNING)
-        {
+    static warn(...messages) {
+        if (Logger.minLogLevel > Logger.LogLevel.WARNING) {
             Logger.temp(...messages);
             return;
         }
@@ -92,10 +80,8 @@ export default class Logger
     }
 
     // Log error messages
-    static error(...messages)
-    {
-        if (Logger.minLogLevel > Logger.LogLevel.ERROR)
-        {
+    static error(...messages) {
+        if (Logger.minLogLevel > Logger.LogLevel.ERROR) {
             Logger.temp(...messages);
             return;
         }
@@ -104,10 +90,8 @@ export default class Logger
     }
 
     // Log with options
-    static logOptions(logLevel, ...messages)
-    {
-        switch(logLevel)
-        {
+    static logOptions(logLevel, ...messages) {
+        switch (logLevel) {
             case Logger.LogLevel.TEMP:
                 Logger.temp(...messages);
                 break;
@@ -132,38 +116,31 @@ export default class Logger
     }
 
     // Group (indent next logs before groupEnd() is called)
-    static group(...messages)
-    {
+    static group(...messages) {
         Logger.info(...messages);
         Logger.#groupsLevel++;
     }
 
-    static groupEnd()
-    {
-        if (Logger.#groupsLevel > 0)
-        {
+    static groupEnd() {
+        if (Logger.#groupsLevel > 0) {
             Logger.#groupsLevel--;
         }
     }
 
-    static groupOptions(logLevel, ...messages)
-    {
+    static groupOptions(logLevel, ...messages) {
         Logger.logOptions(logLevel, ...messages);
         Logger.#groupsLevel++;
     }
 
-    static #tempEnd()
-    {
-        if (Logger.#progressStarted)
-        {
+    static #tempEnd() {
+        if (Logger.#progressStarted) {
             process.stdout.clearLine(0);
             process.stdout.cursorTo(0);
             Logger.#progressStarted = false;
         }
     }
 
-    static #createLogHeader(logLevel)
-    {
+    static #createLogHeader(logLevel) {
         return `${(new Date()).toISOString()}|${Logger.#LogLevelStr[logLevel]}|${'  '.repeat(Logger.#groupsLevel)}`;
     }
 }

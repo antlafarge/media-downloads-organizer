@@ -1,21 +1,16 @@
-export default class Cache
-{
-    constructor()
-    {
+export default class Cache {
+    constructor() {
         this.reset();
     }
 
-    reset()
-    {
+    reset() {
         this.cache = {};
     }
 
-    get(id, asyncCallback, ms = null)
-    {
+    get(id, asyncCallback, ms = null) {
         let now = Date.now();
         let cachedData = this.cache[id];
-        if (cachedData === undefined || now > cachedData.time)
-        {
+        if (cachedData === undefined || now > cachedData.time) {
             cachedData = this.cache[id] = {
                 id: id,
                 data: asyncCallback(id),

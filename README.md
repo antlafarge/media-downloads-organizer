@@ -14,7 +14,7 @@ Get movie informations (title, year, synopsis, director, etc...).
 
 Syntax :
 - Movies : `<Title> (<Year>) <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>`
-- Series : `<Title>/Saison <SeasonNumber> (<Year>)/<Title> S<SeasonNumber>E<EpisodeNumber> <EpisodeTitle> <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>`
+- Series : `<Title>/Saison <SeasonNumber> (<Year>)/<Title> S<SeasonNumber>E<EpisodeNumber> <EpisodeFinal> <EpisodeTitle> <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>`
 
 You can find the field names list in the project resource files :
 - Movies :
@@ -42,7 +42,7 @@ services:
             - "MovieProvider=allocineMovieProvider"
             - "SerieProvider=allocineSerieProvider"
             - "OutputMoviePattern=<Title> (<Year>) <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>"
-            - "OutputSeriePattern=<Title>/Saison <SeasonNumber> (<Year>)/<Title> S<SeasonNumber>E<EpisodeNumber> <EpisodeTitle> <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>"
+            - "OutputSeriePattern=<Title>/Saison <SeasonNumber> (<Year>)/<Title> S<SeasonNumber>E<EpisodeNumber> <EpisodeFinal> <EpisodeTitle> <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>"
             - "MinLogLevel=LOG" # NOTHING, TEMP, DEBUG, LOG, INFO, WARNING or ERROR
 ```
 
@@ -57,7 +57,7 @@ docker run -d \
     --env MovieProvider="allocineMovieProvider" \
     --env SerieProvider="allocineSerieProvider" \
     --env OutputMoviePattern="<Title> (<Year>) <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>" \
-    --env OutputSeriePattern="<Title>/Saison <SeasonNumber> (<Year>)/<Title> S<SeasonNumber>E<EpisodeNumber> <EpisodeTitle> <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>" \
+    --env OutputSeriePattern="<Title>/Saison <SeasonNumber> (<Year>)/<Title> S<SeasonNumber>E<EpisodeNumber> <EpisodeFinal> <EpisodeTitle> <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>" \
     --env MinLogLevel="LOG" \
     --name mdo \
 antlafarge/media-downloads-organizer:latest

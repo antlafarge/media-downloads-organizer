@@ -4,16 +4,14 @@ import path from "path";
 import Logger from "./logger.js";
 import { getHeaders } from "./webFunctions.js";
 
-async function downloadFile(fileUrl, referer, targetFilePath)
-{
+async function downloadFile(fileUrl, referer, targetFilePath) {
     Logger.debug(`Download "${fileUrl}"`);
     const response = await fetch(fileUrl, { method: `GET`, headers: getHeaders(fileUrl, referer) });
     const buffer = await response.arrayBuffer();
     await fs.writeFile(targetFilePath, new DataView(buffer));
 }
 
-function removeInvalidPathCharacters(filePath)
-{
+function removeInvalidPathCharacters(filePath) {
     return filePath
         .replace(/[\\\/:|]/g, '-')
         .replace(/["*]/, "'")
@@ -22,30 +20,23 @@ function removeInvalidPathCharacters(filePath)
         .replace('>', "}");
 }
 
-function fileExists(filePath)
-{
+function fileExists(filePath) {
     return fs.stat(filePath).then(() => true).catch(() => false);
 }
 
-async function getFileSize(filePath)
-{
+async function getFileSize(filePath) {
     return await fs.stat(filePath).then((value) => value.size).catch(() => 0);
 }
 
-async function* getFiles(dir, relativeDirPath = ``)
-{
-    try
-    {
+async function* getFiles(dir, relativeDirPath = ``) {
+    try {
         const dirents = await fs.readdir(dir, { withFileTypes: true });
-        for (const dirent of dirents)
-        {
+        for (const dirent of dirents) {
             const res = path.resolve(dir, dirent.name);
-            if (dirent.isDirectory())
-            {
+            if (dirent.isDirectory()) {
                 yield* getFiles(res, `${relativeDirPath}${dirent.name}/`);
             }
-            else
-            {
+            else {
                 yield {
                     'absoluteFilePath': res,
                     'relativeDirPath': relativeDirPath,
@@ -56,8 +47,7 @@ async function* getFiles(dir, relativeDirPath = ``)
             }
         }
     }
-    catch (error)
-    {
+    catch (error) {
         Logger.error('"fs.readdir" failed :', error);
     }
 }

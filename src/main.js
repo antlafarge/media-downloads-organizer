@@ -37,35 +37,29 @@ let lastDownloadSpeedBytesPerMs = 0;
 
 await main();
 
-async function main()
-{
-    if (! await fileExists(moviesPath))
-    {
+async function main() {
+    if (! await fileExists(moviesPath)) {
         Logger.error(`Target directory "./movies" not found`);
         process.exit(1);
     }
 
-    if (! await fileExists(seriesPath))
-    {
+    if (! await fileExists(seriesPath)) {
         Logger.error(`Target directory "./series" not found`);
         process.exit(1);
     }
 
     let noChanges = true;
 
-    for await (const file of getFiles(downloadsPath))
-    {
+    for await (const file of getFiles(downloadsPath)) {
         Logger.group(`Process "${file.relativeFilePath}"`);
 
-        if (! scanFileExtensionsRE.test(file.fileName))
-        {
+        if (!scanFileExtensionsRE.test(file.fileName)) {
             Logger.info('Skip: file extension ');
             Logger.groupEnd();
             continue;
         }
 
-        if (file.fileName.endsWith(ignoreTag))
-        {
+        if (file.fileName.endsWith(ignoreTag)) {
             Logger.debug(`Skip ignore file "${file.relativeFilePath}"`);
             Logger.groupEnd();
             continue;
@@ -73,8 +67,7 @@ async function main()
 
         const originalFilePath = `${downloadsPath}/${file.relativeFilePath}`;
 
-        if (await fileExists(`${originalFilePath}${ignoreTag}`))
-        {
+        if (await fileExists(`${originalFilePath}${ignoreTag}`)) {
             Logger.debug(`Skip already ignored file "${file.relativeFilePath}"`);
             Logger.groupEnd();
             continue;
@@ -82,24 +75,20 @@ async function main()
 
         let infos;
         let targetPath;
-        if (/^(.+)\WS\W*(\d+)\W*E\W*(\d+)(\W|$)/i.test(file.fileName))
-        {
+        if (/^(.+)\WS\W*(\d+)\W*E\W*(\d+)(\W|$)/i.test(file.fileName)) {
             Logger.group('Get serie infos');
             infos = await serieProvider.getInfos(file.fileName);
-            if (infos != null)
-            {
+            if (infos != null) {
                 infos[`TargetFileName`] = generateFileName(infos, outputSeriePattern);
                 infos[`TargetInfosFileName`] = generateFileName(infos, targetSerieInfoPattern);
                 infos[`TargetImageFileName`] = generateFileName(infos, targetSerieImagePattern);
                 targetPath = seriesPath;
             }
         }
-        else
-        {
+        else {
             Logger.group('Get movie infos');
             infos = await movieProvider.getInfos(file.fileName);
-            if (infos != null)
-            {
+            if (infos != null) {
                 infos[`TargetFileName`] = generateFileName(infos, outputMoviePattern);
                 infos[`TargetInfosFileName`] = generateFileName(infos, targetMovieInfoPattern);
                 infos[`TargetImageFileName`] = generateFileName(infos, targetMovieImagePattern);
@@ -108,8 +97,7 @@ async function main()
         }
         Logger.groupEnd();
 
-        if (infos == null)
-        {
+        if (infos == null) {
             Logger.info(`No match found`);
             ignoreDownloadedFile(originalFilePath);
             Logger.groupEnd();
@@ -121,8 +109,7 @@ async function main()
         const targetInfosFilePath = `${targetPath}/${infos[`TargetInfosFileName`]}`;
         const targetImageFilePath = `${targetPath}/${infos[`TargetImageFileName`]}`;
 
-        if (await fileExists(targetFilePath))
-        {
+        if (await fileExists(targetFilePath)) {
             Logger.warn(`File already exists "${infos[`TargetFileName`]}"`);
             ignoreDownloadedFile(originalFilePath);
             Logger.groupEnd();
@@ -131,15 +118,12 @@ async function main()
         }
 
         const pathMatchResult = infos[`TargetFileName`].match(/^(.+)[\/\\].+?$/);
-        if (pathMatchResult && pathMatchResult[1].length > 0)
-        {
+        if (pathMatchResult && pathMatchResult[1].length > 0) {
             Logger.log(`Create directory "${pathMatchResult[1]}"`);
-            try
-            {
+            try {
                 await fs.mkdir(`${targetPath}/${pathMatchResult[1]}`, { recursive: true });
             }
-            catch (error)
-            {
+            catch (error) {
                 Logger.warn('Create directory failed :', error);
                 Logger.groupEnd();
                 await sleep(1000);
@@ -147,15 +131,12 @@ async function main()
             }
         }
 
-        if (! await fileExists(targetImageFilePath) && infos[`ImageUrl`] != null && infos[`ImageUrl`].length > 0)
-        {
+        if (! await fileExists(targetImageFilePath) && infos[`ImageUrl`] != null && infos[`ImageUrl`].length > 0) {
             Logger.group(`Image "${infos[`TargetImageFileName`]}"`);
-            try
-            {
+            try {
                 await downloadFile(infos[`ImageUrl`], infos[`Referer`], targetImageFilePath);
             }
-            catch (error)
-            {
+            catch (error) {
                 Logger.warn('Create image file failed :', error);
                 Logger.groupEnd();
                 Logger.groupEnd();
@@ -164,42 +145,35 @@ async function main()
             }
             Logger.groupEnd();
         }
-        else
-        {
+        else {
             Logger.warn(`File already exists "${infos[`TargetImageFileName`]}"`);
         }
 
-        if (! await fileExists(targetInfosFilePath))
-        {
+        if (! await fileExists(targetInfosFilePath)) {
             Logger.info(`Infos "${infos[`TargetInfosFileName`]}"`);
-            try
-            {
+            try {
                 await fs.writeFile(targetInfosFilePath, JSON.stringify(infos, null, 2));
             }
-            catch (error)
-            {
+            catch (error) {
                 Logger.error('Create infos file failed :', error);
                 Logger.groupEnd();
                 await sleep(1000);
                 continue;
             }
         }
-        else
-        {
+        else {
             Logger.warn(`File already exists "${infos[`TargetInfosFileName`]}"`);
         }
 
         Logger.group(`Copy "${infos[`TargetFileName`]}"`);
         const fileSize = await getFileSize(originalFilePath);
         let fileSizeLog = `File size : ${getFileSizeReadable(fileSize)}`;
-        if (lastDownloadSpeedBytesPerMs > 0)
-        {
+        if (lastDownloadSpeedBytesPerMs > 0) {
             const estimatedTimeMs = Math.round((fileSize / lastDownloadSpeedBytesPerMs) * 1.05);
             fileSizeLog += ` (Estimated time : ${getTimeReadable(estimatedTimeMs)})`;
         }
         Logger.info(fileSizeLog);
-        try
-        {
+        try {
             const t0 = performance.now();
             await fs.copyFile(originalFilePath, targetFilePath);
             const t1 = performance.now();
@@ -208,15 +182,12 @@ async function main()
             Logger.debug(`Last download speed : ${getFileSizeReadable(lastDownloadSpeedBytesPerMs * 1000)}/s`);
 
             const targetFileSize = await getFileSize(targetFilePath);
-            if (fileSize == targetFileSize)
-            {
+            if (fileSize == targetFileSize) {
                 Logger.info(`Remove "${originalFilePath}"`);
-                try
-                {
+                try {
                     await fs.rm(originalFilePath);
                 }
-                catch (error)
-                {
+                catch (error) {
                     Logger.error('Remove media file failed :', error);
                     Logger.groupEnd();
                     Logger.groupEnd();
@@ -224,13 +195,11 @@ async function main()
                     continue;
                 }
             }
-            else
-            {
+            else {
                 Logger.warn(`File sizes are different : Skipping downloaded file removal`);
             }
         }
-        catch (error)
-        {
+        catch (error) {
             Logger.error('Copy failed :', error);
             Logger.groupEnd();
             Logger.groupEnd();
@@ -244,35 +213,28 @@ async function main()
         await sleep(1000);
     }
 
-    if (noChanges)
-    {
+    if (noChanges) {
         Logger.info(`No changes`);
     }
-    else
-    {
+    else {
         Logger.info(`Done`);
     }
 }
 
-async function ignoreDownloadedFile(filePath)
-{
+async function ignoreDownloadedFile(filePath) {
     Logger.info(`Ignore file`, `"${filePath}"`);
     await fs.writeFile(`${filePath}${ignoreTag}`, `https://hub.docker.com/r/antlafarge/media-downloads-organizer\nhttps://github.com/antlafarge/media-downloads-organizer\nCan't process this media file for one of these reasons :\n- Media match not found on the selected provider.\n- The media file is already present in the destination folder.\nTo retry follow these steps :\n- Check if the media is already present in the destination folder.\n- Rename the media file by adding the official media title and the release year on start if it is not correct.\n- Remove this file.\n- Restart media-downloads-organizer.`);
 }
 
-function generateFileName(infos, pattern)
-{
+function generateFileName(infos, pattern) {
     // Generate filename from pattern
     const parts = pattern.match(/<[^<>\W_]+?>/g);
     let targetName = pattern;
-    for (const part of parts)
-    {
+    for (const part of parts) {
         const partName = part.slice(1, -1);
-        if (partName.length > 0)
-        {
+        if (partName.length > 0) {
             let value = '';
-            if (infos[partName] != null)
-            {
+            if (infos[partName] != null) {
                 // Remove invalid path characters
                 value = removeInvalidPathCharacters(infos[partName]);
             }
@@ -280,19 +242,16 @@ function generateFileName(infos, pattern)
         }
     }
     // Remove starting .
-    while (targetName.startsWith('.'))
-    {
+    while (targetName.startsWith('.')) {
         targetName = targetName.slice(1);
     }
     // Remove ending .
-    while (targetName.endsWith('.'))
-    {
+    while (targetName.endsWith('.')) {
         targetName = targetName.slice(0, -1);
     }
     // Remove space(s) before .ext
     const res = targetName.match(/\s+(\.\w+)$/);
-    if (res)
-    {
+    if (res) {
         targetName = targetName.replace(/\s+(\.\w+)$/, `${res[1]}`);
     }
     // Remove double spaces

@@ -1,17 +1,13 @@
-function removeHtmlDoubleTags(text)
-{
+function removeHtmlDoubleTags(text) {
     return text.replace(/<\w+\s*(\s+?\w+?(\s*=\s*(""|"[^\\]"|".+?[^\\]"))?)*\s*\/?>.+?<\/?\w+\s*>/g, ``);
 }
 
-function removeHtmlTags(text)
-{
+function removeHtmlTags(text) {
     return text.replace(/<\/?\w+\s*(\s+?\w+?(\s*=\s*(""|"[^\\]"|".+?[^\\]"))?)*\s*\/?>/g, ``);
 }
 
-function getHeaders(url, referer)
-{
-    if (url == null)
-    {
+function getHeaders(url, referer) {
+    if (url == null) {
         throw new Error(`getHeaders: Invalid URL`);
     }
 
@@ -31,7 +27,7 @@ function getHeaders(url, referer)
         'Sec-Fetch-User': `?1`,
         'TE': `trailers`,
         'Upgrade-Insecure-Requests': 1,
-        'User-Agent': `Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0`
+        'User-Agent': `Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0`
     };
     return headers;
 }
