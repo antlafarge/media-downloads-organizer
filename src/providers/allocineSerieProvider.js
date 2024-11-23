@@ -83,7 +83,7 @@ export default class AllocineMovieProvider extends Provider {
                     ...commonInfos,
                     ...serieInfos,
                     'EpisodeNumber': serieEpisodeNumber,
-                    'EpisodeFinal': (serieEpisodeFinal & serieEpisodeFinal.length ? 'FINAL' : ''),
+                    'EpisodeFinal': (serieEpisodeFinal && serieEpisodeFinal.length ? 'FINAL' : ''),
                     'GoogleSearch': googleSearch,
                     'OriginalFileName': originalFileName,
                     'Referer': googleSearchUrl ?? `https://www.google.com/search?q=serie`,
