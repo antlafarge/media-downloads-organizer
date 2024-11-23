@@ -12,9 +12,11 @@ Get movie informations (title, year, synopsis, director, etc...).
 
 ## Patterns
 
-Syntax examples :
-- Movies : `<Title> (<Year>) <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>`
-- Series : `<Title>/Saison <SeasonNumber> (<Year>)/<Title> S<SeasonNumber>E<EpisodeNumber> <EpisodeFinal> <EpisodeTitle> <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>`
+Output syntax examples :
+- Movies :  
+`<Title> (<Year>) <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>`
+- Series :  
+`<Title>/Saison <SeasonNumber> (<Year>)/<Title> S<SeasonNumber>E<EpisodeNumber> <EpisodeFinal> <EpisodeTitle> <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>`
 
 You can find the field names list in the project resource files :
 - Movies :
@@ -40,6 +42,7 @@ services:
         environment:
             - "MovieProvider=allocineMovieProvider"
             - "SerieProvider=allocineSerieProvider"
+            - "ScanFileExtensions=mkv|avi|mp4|m4[vp]|og[gv]|flv|wmv|webm|mov|avchd|ts|mpe?g|3gp"
             - "OutputMoviePattern=<Title> (<Year>) <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>"
             - "OutputSeriePattern=<Title>/Saison <SeasonNumber> (<Year>)/<Title> S<SeasonNumber>E<EpisodeNumber> <EpisodeFinal> <EpisodeTitle> <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>"
             - "MinLogLevel=LOG" # NOTHING, TEMP, DEBUG, LOG, INFO, WARNING or ERROR
@@ -55,6 +58,7 @@ docker run -d \
     -v "/hdd/Series/:/usr/src/app/series/" \
     --env MovieProvider="allocineMovieProvider" \
     --env SerieProvider="allocineSerieProvider" \
+    --env ScanFileExtensions="mkv|avi|mp4|m4[vp]|og[gv]|flv|wmv|webm|mov|avchd|ts|mpe?g|3gp" \
     --env OutputMoviePattern="<Title> (<Year>) <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>" \
     --env OutputSeriePattern="<Title>/Saison <SeasonNumber> (<Year>)/<Title> S<SeasonNumber>E<EpisodeNumber> <EpisodeFinal> <EpisodeTitle> <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>" \
     --env MinLogLevel="LOG" \
