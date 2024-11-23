@@ -12,14 +12,13 @@ Get movie informations (title, year, synopsis, director, etc...).
 
 ## Patterns
 
-Syntax :
+Syntax examples :
 - Movies : `<Title> (<Year>) <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>`
 - Series : `<Title>/Saison <SeasonNumber> (<Year>)/<Title> S<SeasonNumber>E<EpisodeNumber> <EpisodeFinal> <EpisodeTitle> <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>`
 
 You can find the field names list in the project resource files :
 - Movies :
     - [/res/commonInfos.json](https://github.com/antlafarge/media-downloads-organizer/blob/main/res/commonInfos.json)
-    - [/res/movieInfos.json](https://github.com/antlafarge/media-downloads-organizer/blob/main/res/movieInfos.json)
 - Series :
     - [/res/commonInfos.json](https://github.com/antlafarge/media-downloads-organizer/blob/main/res/commonInfos.json)
     - [/res/serieInfos.json](https://github.com/antlafarge/media-downloads-organizer/blob/main/res/serieInfos.json)
