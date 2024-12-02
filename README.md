@@ -31,7 +31,7 @@ You can find the field names list in the project resource files :
 
 ```yml
 services:
-    media-downloads-organizer:
+    mdo:
         image: antlafarge/media-downloads-organizer:latest
         container_name: mdo
         user: 1000:100
@@ -40,12 +40,12 @@ services:
             - "/hdd/Movies/:/usr/src/app/movies/"
             - "/hdd/Series/:/usr/src/app/series/"
         environment:
-            - "MovieProvider=allocineMovieProvider"
-            - "SerieProvider=allocineSerieProvider"
-            - "ScanFileExtensions=mkv|avi|mp4|m4[vp]|og[gv]|flv|wmv|webm|mov|avchd|ts|mpe?g|3gp"
-            - "OutputMoviePattern=<Title> (<Year>) <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>"
-            - "OutputSeriePattern=<Title>/Saison <SeasonNumber> (<Year>)/<Title> S<SeasonNumber>E<EpisodeNumber> <EpisodeFinal> <EpisodeTitle> <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>"
-            - "MinLogLevel=LOG" # NOTHING, TEMP, DEBUG, LOG, INFO, WARNING or ERROR
+            MovieProvider: "allocineMovieProvider"
+            SerieProvider: "allocineSerieProvider"
+            ScanFileExtensions: "mkv|avi|mp4|m4[vp]|og[gv]|flv|wmv|webm|mov|avchd|ts|mpe?g|3gp"
+            OutputMoviePattern: "<Title> (<Year>) <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>"
+            OutputSeriePattern: "<Title>/Saison <SeasonNumber> (<Year>)/<Title> S<SeasonNumber>E<EpisodeNumber> <EpisodeFinal> <EpisodeTitle> <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>"
+            MinLogLevel: "LOG" # NOTHING, TEMP, DEBUG, LOG, INFO, WARNING or ERROR
 ```
 
 ## Run
@@ -56,12 +56,12 @@ docker run -d \
     -v "/hdd/Downloads/:/usr/src/app/downloads/" \
     -v "/hdd/Movies/:/usr/src/app/movies/" \
     -v "/hdd/Series/:/usr/src/app/series/" \
-    --env MovieProvider="allocineMovieProvider" \
-    --env SerieProvider="allocineSerieProvider" \
-    --env ScanFileExtensions="mkv|avi|mp4|m4[vp]|og[gv]|flv|wmv|webm|mov|avchd|ts|mpe?g|3gp" \
-    --env OutputMoviePattern="<Title> (<Year>) <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>" \
-    --env OutputSeriePattern="<Title>/Saison <SeasonNumber> (<Year>)/<Title> S<SeasonNumber>E<EpisodeNumber> <EpisodeFinal> <EpisodeTitle> <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>" \
-    --env MinLogLevel="LOG" \
+    -e MovieProvider="allocineMovieProvider" \
+    -e SerieProvider="allocineSerieProvider" \
+    -e ScanFileExtensions="mkv|avi|mp4|m4[vp]|og[gv]|flv|wmv|webm|mov|avchd|ts|mpe?g|3gp" \
+    -e OutputMoviePattern="<Title> (<Year>) <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>" \
+    -e OutputSeriePattern="<Title>/Saison <SeasonNumber> (<Year>)/<Title> S<SeasonNumber>E<EpisodeNumber> <EpisodeFinal> <EpisodeTitle> <Language> <VideoCodec> <VideoQuality> <AudioCodec> <AudioQuality>.<Extension>" \
+    -e MinLogLevel="LOG" \
     --name mdo \
 antlafarge/media-downloads-organizer:latest
 ```
