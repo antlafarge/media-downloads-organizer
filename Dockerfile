@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:lts
 
 LABEL maintainer.name="Antoine Lafarge" \
       maintainer.email="ant.lafarge@gmail.com" \
