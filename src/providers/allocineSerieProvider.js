@@ -51,7 +51,7 @@ export default class AllocineMovieProvider extends Provider {
         });
 
         const nodes = dom.window.document.querySelectorAll(`a[href*='https://www.allocine.fr/series/ficheserie-']`);
-        const allocineSeasonUrlRegex = /^(https:\/\/www.allocine.fr\/series\/ficheserie-(\d+)\/saison-(\d+)).*?(\?.+?)?(#.+?)?$/i;
+        const allocineSeasonUrlRegex = /^(https:\/\/www.allocine.fr\/series\/ficheserie-(\d+)\/saison-(\d+)\/?).*?(\?.+?)?(#.+?)?$/i;
 
         // Get urls and remove duplicates
         const urls = [];
