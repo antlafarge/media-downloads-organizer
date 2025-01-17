@@ -45,10 +45,9 @@ export default class AllocineMovieProvider extends Provider {
         }
 
         let bestMatch = { MatchScore: -Infinity };
-        const alreadyProcessedMovieUrls = {};
 
         const searchWords = searchStr.match(/\w+/g);
-        const search = `${searchWords.join(` `)}`;
+        const search = searchWords.join(' ');
         const searchUrl = `${searchUrlBase}${encodeURIComponent(search)}`;
 
         Logger.debug(`Search : '${search}'`);
@@ -66,7 +65,7 @@ export default class AllocineMovieProvider extends Provider {
         const nodes = dom.window.document.querySelectorAll(`section.movies-results span[class*='${fragment1}'],section.movies-results span[class*='${fragment2}'],section.movies-results span[class*='${fragment3}']`);
 
         // Get movie urls and remove duplicates
-        const movieUrls = [];
+        const movieIds = new Set;
         for (const node of nodes) {
             try {
                 Logger.debug(`className= ${node.className}`);
@@ -76,15 +75,7 @@ export default class AllocineMovieProvider extends Provider {
                 Logger.debug(`decodedPart= ${decodedPart}`);
                 const movieId = decodedPart.replace(/.+=(.+)\..+/, '$1');
                 Logger.debug(`movieId= ${movieId}`);
-                const url = `https://www.allocine.fr/film/fichefilm_gen_cfilm=${movieId}.html`;
-                Logger.debug(`movieUrl= ${url}`);
-                if (url != null && url.length > 0) {
-                    const movieUrl = url.match(/^(.+?)([\?#].*|$)/)[1];
-                    if (alreadyProcessedMovieUrls[movieUrl] == null) {
-                        alreadyProcessedMovieUrls[movieUrl] = 1;
-                        movieUrls.push(movieUrl);
-                    }
-                }
+                movieIds.add(movieUrl);
             }
             catch (error) {
                 Logger.error(error, node.className);
@@ -92,15 +83,18 @@ export default class AllocineMovieProvider extends Provider {
         }
 
         const matches = [];
-        for (const movieUrl of movieUrls) {
+        for (const movieId of movieIds) {
+            const movieUrl = `https://www.allocine.fr/film/fichefilm_gen_cfilm=${movieId}.html`;
+            Logger.debug(`movieUrl= ${url}`);
+
             try {
                 const infos = {
                     ...commonInfos,
                     ...movieInfos,
-                    'Search': search,
                     'OriginalFileName': originalFileName,
                     'Referer': searchUrl ?? `https://www.allocine.fr`,
-                    'Url': movieUrl,
+                    'Search': search,
+                    'Url': movieUrl
                 };
 
                 this.extractFileInfos(infos);

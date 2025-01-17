@@ -26,80 +26,88 @@ export default class AllocineMovieProvider extends Provider {
         const serieResult = originalFileName.match(/^(.+)\WS\W*(\d+)\W*E\W*(\d+)(\W*FINAL)?(\W|$)/i);
 
         const serieTitle = serieResult[1];
-        const serieSeasonNumber = serieResult[2];
-        const serieEpisodeNumber = serieResult[3];
+        const serieSeasonNumber = parseInt(serieResult[2]);
+        const serieEpisodeNumber = parseInt(serieResult[3]);
         const serieEpisodeFinal = serieResult[4];
 
-        const googleSearchUrlBase = `https://www.google.com/search?q=`;
+        const searchUrlBase = `https://www.allocine.fr/rechercher/series/?q=`;
 
         // We use full file name
         const searchWords = serieTitle.match(/\w+/g);
 
         let bestMatch = { MatchScore: -Infinity };
-        const alreadyProcessedSeries = {};
 
-        const googleSearch = `site:allocine.fr serie ${searchWords.join(` `)} saison ${serieSeasonNumber}`;
-        const googleSearchUrl = `${googleSearchUrlBase}${encodeURIComponent(googleSearch)}`;
+        const search = searchWords.join(' ');
+        const searchUrl = `${searchUrlBase}${encodeURIComponent(search)}`;
 
-        Logger.debug(`Google Search : '${googleSearch}'`);
+        Logger.debug(`Search : '${search}'`);
 
-        const dom = await this.webCache.get(googleSearchUrl, async (googleSearchUrl) => {
-            Logger.debug(`Get "${googleSearchUrl}"`);
-            const response = await fetch(googleSearchUrl, { method: `GET`, headers: getHeaders(googleSearchUrl, googleSearchUrl) });
+        const dom = await this.webCache.get(searchUrl, async (searchUrl) => {
+            Logger.debug(`Get "${searchUrl}"`);
+            const response = await fetch(searchUrl, { method: `GET`, headers: getHeaders(searchUrl, 'https://www.allocine.fr') });
             const html = await response.text();
             return new JSDOM(html);
         });
 
-        const nodes = dom.window.document.querySelectorAll(`a[href*='https://www.allocine.fr/series/ficheserie-']`);
-        const allocineSeasonUrlRegex = /^(https:\/\/www.allocine.fr\/series\/ficheserie-(\d+)\/saison-(\d+)\/?).*?(\?.+?)?(#.+?)?$/i;
+        const fragment1 = 'aWNoZXNlcmllX2dlbl9jc2VyaWU9'; // icheserie_gen_cserie=
+        const fragment2 = 'ZmljaGVzZXJpZV9nZW5fY3Nlcmll'; // ficheserie_gen_cserie
+        const fragment3 = 'L2ZpY2hlc2VyaWVfZ2VuX2NzZXJp'; // /ficheserie_gen_cseri
+        const nodes = dom.window.document.querySelectorAll(`section.series-results span[class*='${fragment1}'],section.series-results span[class*='${fragment2}'],section.series-results span[class*='${fragment3}']`);
 
         // Get urls and remove duplicates
-        const urls = [];
+        const serieIds = new Set;
         for (const node of nodes) {
-            let url = node.href;
-            if (url != null && url.length > 0) {
-                const allocineSeasonUrlMatchResult = url.match(allocineSeasonUrlRegex);
-                if (allocineSeasonUrlMatchResult && allocineSeasonUrlMatchResult.length > 1) {
-                    const allocineSeasonUrl = allocineSeasonUrlMatchResult[1];
-                    if (alreadyProcessedSeries[allocineSeasonUrl] == null) {
-                        alreadyProcessedSeries[allocineSeasonUrl] = 1;
-                        urls.push(allocineSeasonUrl);
-                    }
-                }
+            try {
+                Logger.debug(`className= ${node.className}`);
+                const base64Part = node.className.replace(new RegExp(`.+(?=${fragment1}|${fragment2}|${fragment3})([A-Za-z0-9+/=]+).*$`), '$1');
+                Logger.debug(`base64Part= ${base64Part}`);
+                const decodedPart = atob(base64Part);
+                Logger.debug(`decodedPart= ${decodedPart}`);
+                const serieId = decodedPart.replace(/.+=(.+)\..+/, '$1');
+                Logger.debug(`serieId= ${serieId}`);
+                serieIds.add(serieId);
+            }
+            catch (error) {
+                Logger.error(error, node.className);
             }
         }
 
         const matches = [];
-        for (const url of urls) {
+        for (const serieId of serieIds) {
             try {
-                const allocineSeasonUrlMatchResult = url.match(allocineSeasonUrlRegex);
-                if (!allocineSeasonUrlMatchResult || allocineSeasonUrlMatchResult.length < 3) {
+                const serieUrl = `https://www.allocine.fr/series/ficheserie_gen_cserie=${serieId}.html`;
+                Logger.debug(`serieUrl= ${serieUrl}`);
+
+                const domSeasons = await this.fetchData(`https://www.allocine.fr/series/ficheserie-${serieId}/saisons/`, searchUrl ?? 'https://www.allocine.fr');
+                const seasonNode = Array.from(domSeasons.window.document.querySelectorAll(`a[href*='/series/ficheserie-${serieId}/saison-']`)).find(a => a.text == `Saison ${serieSeasonNumber}`);
+                if (!seasonNode) {
                     continue;
                 }
-
-                const allocineSeasonId = allocineSeasonUrlMatchResult[2];
+                const seasonUrl = seasonNode.href.startsWith('http')
+                    ? seasonNode.href
+                    : `https://www.allocine.fr${seasonNode.href}`
 
                 const infos = {
                     ...commonInfos,
                     ...serieInfos,
-                    'EpisodeNumber': serieEpisodeNumber,
-                    'EpisodeFinal': (serieEpisodeFinal && serieEpisodeFinal.length ? 'FINAL' : ''),
-                    'GoogleSearch': googleSearch,
+                    'EpisodeFinal': (serieEpisodeFinal && serieEpisodeFinal.length > 0 ? 'FINAL' : ''),
+                    'EpisodeNumber': serieEpisodeNumber < 10 ? `0${serieEpisodeNumber}` : `${serieEpisodeNumber}`,
                     'OriginalFileName': originalFileName,
-                    'Referer': googleSearchUrl ?? `https://www.google.com/search?q=serie`,
-                    'SeasonNumber': serieSeasonNumber,
-                    'SeasonUrl': url,
+                    'Referer': searchUrl ?? 'https://www.allocine.fr',
+                    'Search': search,
+                    'SeasonNumber': serieSeasonNumber < 10 ? `0${serieSeasonNumber}` : `${serieSeasonNumber}`,
+                    'SeasonUrl': seasonUrl,
                     'Title': serieTitle,
-                    'Url': `https://www.allocine.fr/series/ficheserie_gen_cserie=${allocineSeasonId}.html`,
+                    'Url': serieUrl
                 };
 
                 this.extractFileInfos(infos);
 
-                const dom = await this.fetchData(infos['Url'], infos.Referer);
+                const dom = await this.fetchData(serieUrl, infos.Referer);
 
                 this.extractInfos(dom, infos);
 
-                const domEpisode = await this.fetchData(infos['SeasonUrl'], infos.Referer);
+                const domEpisode = await this.fetchData(seasonUrl, infos.Referer);
 
                 this.extractImage(domEpisode, infos);
 
