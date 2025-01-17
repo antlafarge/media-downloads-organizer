@@ -27,7 +27,7 @@ function getHeaders(url, referer) {
         'Sec-Fetch-User': `?1`,
         'TE': `trailers`,
         'Upgrade-Insecure-Requests': 1,
-        'User-Agent': `Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0`
+        'User-Agent': `Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0`
     };
     return headers;
 }
