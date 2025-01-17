@@ -23,8 +23,7 @@ export default class AllocineMovieProvider extends Provider {
     async getInfos(originalFileName) {
         this.webCache.reset();
 
-        const googleSearchUrlBase = `https://www.google.com/search?q=`;
-
+        const searchUrlBase = `https://www.allocine.fr/rechercher/movie/?q=`;
         let searchStr = null;
 
         // We try to extract the possible year and more precise title of the movie
@@ -49,30 +48,46 @@ export default class AllocineMovieProvider extends Provider {
         const alreadyProcessedMovieUrls = {};
 
         const searchWords = searchStr.match(/\w+/g);
-        const googleSearch = `site:allocine.fr film ${searchWords.join(` `)}`;
-        const googleSearchUrl = `${googleSearchUrlBase}${encodeURIComponent(googleSearch)}`;
+        const search = `${searchWords.join(` `)}`;
+        const searchUrl = `${searchUrlBase}${encodeURIComponent(search)}`;
 
-        Logger.debug(`Google Search : '${googleSearch}'`);
+        Logger.debug(`Search : '${search}'`);
 
-        const dom = await this.webCache.get(googleSearchUrl, async (googleSearchUrl) => {
-            Logger.debug(`Get "${googleSearchUrl}"`);
-            const response = await fetch(googleSearchUrl, { method: `GET`, headers: getHeaders(googleSearchUrl, googleSearchUrl) });
+        const dom = await this.webCache.get(searchUrl, async (searchUrl) => {
+            Logger.debug(`Get "${searchUrl}"`);
+            const response = await fetch(searchUrl, { method: `GET`, headers: getHeaders(searchUrl, 'https://www.allocine.fr') });
             const html = await response.text();
             return new JSDOM(html);
         });
 
-        const nodes = dom.window.document.querySelectorAll(`a[href*='https://www.allocine.fr/film/fichefilm_gen_cfilm=']`);
+        const fragment1 = 'Y2hlZmlsbV9nZW5fY2ZpbG09'; // chefilm_gen_cfilm=
+        const fragment2 = 'aWNoZWZpbG1fZ2VuX2NmaWxt'; // ichefilm_gen_cfilm
+        const fragment3 = 'ZmljaGVmaWxtX2dlbl9jZmls'; // fichefilm_gen_cfil
+        const nodes = dom.window.document.querySelectorAll(`section.movies-results span[class*='${fragment1}'],section.movies-results span[class*='${fragment2}'],section.movies-results span[class*='${fragment3}']`);
 
         // Get movie urls and remove duplicates
         const movieUrls = [];
         for (const node of nodes) {
-            const url = node.href;
-            if (url != null && url.length > 0) {
-                const movieUrl = url.match(/^(.+?)([\?#].*|$)/)[1];
-                if (alreadyProcessedMovieUrls[movieUrl] == null) {
-                    alreadyProcessedMovieUrls[movieUrl] = 1;
-                    movieUrls.push(movieUrl);
+            try {
+                Logger.debug(`className= ${node.className}`);
+                const base64Part = node.className.replace(new RegExp(`.+(?=${fragment1}|${fragment2}|${fragment3})([A-Za-z0-9+/=]+).*$`), '$1');
+                Logger.debug(`base64Part= ${base64Part}`);
+                const decodedPart = atob(base64Part);
+                Logger.debug(`decodedPart= ${decodedPart}`);
+                const movieId = decodedPart.replace(/.+=(.+)\..+/, '$1');
+                Logger.debug(`movieId= ${movieId}`);
+                const url = `https://www.allocine.fr/film/fichefilm_gen_cfilm=${movieId}.html`;
+                Logger.debug(`movieUrl= ${url}`);
+                if (url != null && url.length > 0) {
+                    const movieUrl = url.match(/^(.+?)([\?#].*|$)/)[1];
+                    if (alreadyProcessedMovieUrls[movieUrl] == null) {
+                        alreadyProcessedMovieUrls[movieUrl] = 1;
+                        movieUrls.push(movieUrl);
+                    }
                 }
+            }
+            catch (error) {
+                Logger.error(error, node.className);
             }
         }
 
@@ -82,9 +97,9 @@ export default class AllocineMovieProvider extends Provider {
                 const infos = {
                     ...commonInfos,
                     ...movieInfos,
-                    'GoogleSearch': googleSearch,
+                    'Search': search,
                     'OriginalFileName': originalFileName,
-                    'Referer': googleSearchUrl ?? `https://www.google.com/search?q=movie`,
+                    'Referer': searchUrl ?? `https://www.allocine.fr`,
                     'Url': movieUrl,
                 };
 
