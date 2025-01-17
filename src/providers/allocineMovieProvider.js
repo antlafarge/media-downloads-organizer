@@ -75,7 +75,7 @@ export default class AllocineMovieProvider extends Provider {
                 Logger.debug(`decodedPart= ${decodedPart}`);
                 const movieId = decodedPart.replace(/.+=(.+)\..+/, '$1');
                 Logger.debug(`movieId= ${movieId}`);
-                movieIds.add(movieUrl);
+                movieIds.add(movieId);
             }
             catch (error) {
                 Logger.error(error, node.className);
@@ -85,7 +85,7 @@ export default class AllocineMovieProvider extends Provider {
         const matches = [];
         for (const movieId of movieIds) {
             const movieUrl = `https://www.allocine.fr/film/fichefilm_gen_cfilm=${movieId}.html`;
-            Logger.debug(`movieUrl= ${url}`);
+            Logger.debug(`movieUrl= ${movieUrl}`);
 
             try {
                 const infos = {
