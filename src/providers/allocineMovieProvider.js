@@ -68,7 +68,7 @@ export default class AllocineMovieProvider extends Provider {
         for (const node of nodes) {
             const url = node.href;
             if (url != null && url.length > 0) {
-                const movieUrl = url.match(/^(.+?)(\?.+|$)/)[1];
+                const movieUrl = url.match(/^(.+?)([\?#].*|$)/)[1];
                 if (alreadyProcessedMovieUrls[movieUrl] == null) {
                     alreadyProcessedMovieUrls[movieUrl] = 1;
                     movieUrls.push(movieUrl);
