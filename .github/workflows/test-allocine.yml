@@ -28,9 +28,7 @@ jobs:
         with:
           node-version: 'lts/*'
       - name: Setup project
-        run: |
-          npm install -g npm
-          npm install
+        run: npm install
       - name: Launch test
         run: npm run test
         env:
