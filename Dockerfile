@@ -12,8 +12,6 @@ ENV OutputMoviePattern="<Title> (<Year>) <Quality>.<Extension>" \
     SerieProvider="allocineSerieProvider" \
     MinLogLevel="LOG"
 
-RUN npm isntall -g npm
-
 WORKDIR /usr/src/app
 
 COPY package.json ./
